@@ -1,15 +1,11 @@
-export type Filters = Record<string, string | number | boolean | undefined>;
-
-export function applyFilters<T>(data: T[], filters: Filters): T[] {
-  return data.filter((item) => {
+export function applyFilters<T extends Record<string, any>>(
+  records: T[],
+  filters: Partial<T>
+): T[] {
+  return records.filter(item => {
     return Object.entries(filters).every(([key, value]) => {
-      if (value === undefined || value === null || value === "") {
-        return true;
-      }
-
-      const itemValue = (item as any)[key];
-
-      return itemValue === value;
+      if (value === undefined) return true;
+      return item[key] === value;
     });
   });
 }

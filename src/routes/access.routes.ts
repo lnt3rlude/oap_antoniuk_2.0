@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { AccessService } from "../services/access.service";
 import { AccessController } from "../controllers/access.controller";
 import { validateAccessRequest } from "../middleware/validation.middleware";
+import { AccessService } from "../services/access.service";
 
 export const createAccessRouter = (accessService: AccessService) => {
   const router = Router();

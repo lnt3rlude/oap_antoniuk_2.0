@@ -1,22 +1,23 @@
-import { ApprovalResponseDto } from "../dtos/approval.dto";
+import { Approval } from "../models/approval.model";
 
 class ApprovalRepository {
-  private approvals: any[] = []; // Внутрішня модель
+  private approvals: Approval[] = [];
 
-  findAll(): any[] {
+  findAll(): Approval[] {
     return this.approvals;
   }
 
-  findById(id: string): any | undefined {
+  findById(id: string): Approval | undefined {
     return this.approvals.find(a => a.id === id);
   }
 
-  create(data: any): any {
-    const newApproval = {
+  create(data: Omit<Approval, "id" | "createdAt">): Approval {
+    const newApproval: Approval = {
       ...data,
       id: `appr-${Date.now()}`,
       createdAt: new Date().toISOString()
     };
+
     this.approvals.push(newApproval);
     return newApproval;
   }
@@ -24,6 +25,7 @@ class ApprovalRepository {
   delete(id: string): boolean {
     const index = this.approvals.findIndex(a => a.id === id);
     if (index === -1) return false;
+
     this.approvals.splice(index, 1);
     return true;
   }

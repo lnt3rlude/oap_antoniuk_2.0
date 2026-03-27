@@ -8,24 +8,14 @@ import {
 import { applyFilters } from "../utils/applyFilters";
 import { paginate } from "../utils/paginate";
 
+
 export class AccessService {
 
   // READ ALL + FILTERS + PAGINATION
-  getAll(query: any): {
-    data: AccessResponseDto[];
-    total: number;
-    page: number | null;
-    pageSize: number | null;
-    skip: number;
-    take: number;
-  } {
-
+  getAll(query: any) {
     const records = accessRepository.findAll();
 
-    // 1. FILTERS
     const filtered = applyFilters(records, query);
-
-    // 2. PAGINATION
     const result = paginate(filtered, query);
 
     return {

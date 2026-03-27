@@ -27,18 +27,16 @@ export class AccessController {
 
   // GET ALL
   getAll = (
-    req: Request<{}, GetAllResponse, {}, GetAllQuery>,
-    res: Response<GetAllResponse>,
+    req: Request,
+    res: Response,
     next: NextFunction
-  ) => {
+    ) => {
     try {
-      const { status, search } = req.query;
-
-      const records = this.accessService.getAllRecords(status, search);
+      const result = this.accessService.getAll(req.query);
 
       res.json({
-        items: records,
-        total: records.length
+        items: result.data,
+        total: result.total
       });
     } catch (err) {
       next(err);

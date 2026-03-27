@@ -7,6 +7,8 @@ import {
   UpdateApprovalDto
 } from "../dtos/approval.dto";
 import { applyFilters } from "../utils/applyFilters";
+import { Approval } from "../models/approval.model";
+import { ApprovalFilters } from "../types/approval.types";
 
 export class ApprovalService {
 
@@ -31,24 +33,24 @@ export class ApprovalService {
   }
 
   // READ ALL + FILTERS + PAGINATION
-  getAll(filters: any = {}): ApprovalResponseDto[] {
-    const records = approvalRepository.findAll();
+  getAll(filters: ApprovalFilters = {}): ApprovalResponseDto[] {
+  const records = approvalRepository.findAll();
 
-    const filtered = applyFilters(records, filters);
+  const filtered = applyFilters(records, filters);
 
-    const page = Number(filters.page) || 1;
-    const pageSize = Number(filters.pageSize) || 10;
+  const page = filters.page || 1;
+  const pageSize = filters.pageSize || 10;
 
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
 
-    const paginated = filtered.slice(start, end);
+  const paginated = filtered.slice(start, end);
 
-    return paginated.map(a => {
-      const admin = userRepository.findById(a.adminId);
-      return this.mapToResponse(a, admin?.userName || "Unknown");
-    });
-  }
+  return paginated.map((a: Approval) => {
+    const admin = userRepository.findById(a.adminId);
+    return this.mapToResponse(a, admin?.userName || "Unknown");
+  });
+}
 
   getById(id: string): ApprovalResponseDto {
     const approval = approvalRepository.findById(id);
@@ -79,7 +81,7 @@ export class ApprovalService {
   }
 
   private mapToResponse(
-    approval: any,
+    approval: Approval,
     adminName: string
   ): ApprovalResponseDto {
     return {

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserService } from "../services/user.service";
-import { UserController } from "../controllers/user.controller";
+import { UserController } from "../controllers/user.controllers";
 
 export const createUserRouter = (userService: UserService) => {
   const router = Router();

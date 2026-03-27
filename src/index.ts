@@ -1,38 +1,36 @@
 import express from "express";
 import type { Request, Response } from "express";
-import cors from "cors"; // Додай cors, щоб фронтенд міг підключитися
-import accessRoutes from "./routes/access.routes";
-import { globalErrorHandler } from './middleware/error.handler';
-import { requestLogger } from './middleware/logger.middleware';
+import cors from "cors";
 
+import { AccessService } from "./services/access.service";
+import { createAccessRouter } from "./routes/access.routes";
+
+import { globalErrorHandler } from "./middleware/error.handler";
+import { requestLogger } from "./middleware/logger.middleware";
 
 const app = express();
 
-// 1. ПУНКТ 8: ЛОГУВАННЯ (має бути першим, щоб засікти час)
+// middleware
 app.use(requestLogger);
-
-// 2. БАЗОВІ НАЛАШТУВАННЯ
-app.use(cors()); // Дозволяє запити з браузера (важливо для app.js)
+app.use(cors());
 app.use(express.json());
 
-// 3. ТЕСТОВИЙ МАРШРУТ
+// health
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ ok: true, timestamp: new Date() });
 });
 
-// 4. ПУНКТ 3: РОУТИ
-app.use('/api/access-requests', accessRoutes);
+// 🔥 CREATE SERVICE + ROUTER (ОЦЕ ГОЛОВНЕ)
+const accessService = new AccessService();
+const accessRoutes = createAccessRouter(accessService);
 
-// 5. ПУНКТ 7: ЦЕНТРАЛІЗОВАНА ОБРОБКА ПОМИЛОК
-// Використовуй тільки globalErrorHandler, він у нас найновіший
+app.use("/api/access-requests", accessRoutes);
+
+// error handler
 app.use(globalErrorHandler);
 
-// ЗАПУСК
 const PORT = 3000;
+
 app.listen(PORT, () => {
-  console.log(`
-  🚀 Сервер запущено!
-  🔗 URL: http://localhost:${PORT}
-  🏥 Health check: http://localhost:${PORT}/health
-  `);
+  console.log(`🚀 Server running: http://localhost:${PORT}`);
 });
